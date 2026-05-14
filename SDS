@@ -1,0 +1,156 @@
+import java.util.Scanner;
+
+public class PendakianSemeru {
+
+    public static void main(String[] args) {
+
+        /*
+         Keterangan:
+         0 = Jalur hijau
+         1 = Jurang / jalur merah
+         2 = Pos
+         3 = Puncak Mahameru
+        */
+
+        int[][] map = {
+                {3,1,1,1,1,1,1,1,1,0},
+                {0,1,0,0,0,1,1,2,1,0},
+                {0,1,1,1,0,0,2,0,0,0},
+                {0,0,0,0,0,1,0,0,1,1},
+                {2,0,1,0,0,1,2,1,1,1},
+                {0,0,1,0,0,1,0,0,0,2}
+        };
+
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Masukkan tenaga awal : ");
+        int tenaga = input.nextInt();
+
+        input.nextLine();
+
+        System.out.print("Masukkan jalur : ");
+        String jalur = input.nextLine().toUpperCase();
+
+        // Posisi awal P1
+        int baris = 5;
+        int kolom = 9;
+
+        boolean gagal = false;
+
+        for (int i = 0; i < jalur.length(); i++) {
+
+            char langkah = jalur.charAt(i);
+
+            int newBaris = baris;
+            int newKolom = kolom;
+
+            switch (langkah) {
+
+                case 'L':
+                    newKolom--;
+                    tenaga--;
+                    break;
+
+                case 'R':
+                    newKolom++;
+                    tenaga--;
+                    break;
+
+                case 'U':
+                    newBaris--;
+                    tenaga--;
+                    break;
+
+                case 'D':
+                    newBaris++;
+                    tenaga--;
+                    break;
+
+                case 'I':
+
+                    // Istirahat hanya boleh di pos
+                    if (map[baris][kolom] == 2) {
+                        tenaga += 10;
+                    } else {
+                        System.out.println(
+                            "Mohon maaf, istirahat hanya diperbolehkan di Pos-pos yang tersedia"
+                        );
+                        gagal = true;
+                    }
+
+                    break;
+
+                default:
+                    System.out.println("Input langkah tidak valid");
+                    gagal = true;
+            }
+
+            if (gagal) {
+                break;
+            }
+
+            // Jika bukan istirahat maka posisi berubah
+            if (langkah != 'I') {
+
+                // Cek keluar map
+                if (newBaris < 0 || newBaris >= map.length ||
+                    newKolom < 0 || newKolom >= map[0].length) {
+
+                    System.out.println(
+                        "Jalur anda salah, anda masuk ke jurang/blank"
+                    );
+
+                    gagal = true;
+                    break;
+                }
+
+                // Cek jurang
+                if (map[newBaris][newKolom] == 1) {
+
+                    System.out.println(
+                        "Jalur anda salah, anda masuk ke jurang/blank"
+                    );
+
+                    gagal = true;
+                    break;
+                }
+
+                // Update posisi
+                baris = newBaris;
+                kolom = newKolom;
+            }
+
+            // Cek tenaga habis
+            if (tenaga <= 0) {
+
+                System.out.println(
+                    "Jalur anda benar, tapi tenaga anda tidak akan kuat, " +
+                    "coba jalur lain atau sempatkan istirahat terlebih dahulu"
+                );
+
+                gagal = true;
+                break;
+            }
+
+            // Cek sampai puncak
+            if (map[baris][kolom] == 3) {
+
+                System.out.println(
+                    "Selamat Pendakian anda berhasil mencapai " +
+                    "Puncak Mahameru, sisa tenaga anda " + tenaga
+                );
+
+                gagal = true;
+                break;
+            }
+        }
+
+        if (!gagal) {
+
+            System.out.println(
+                "Pendakian selesai, posisi terakhir di (" +
+                baris + "," + kolom + ") dengan sisa tenaga " + tenaga
+            );
+        }
+    }
+}
